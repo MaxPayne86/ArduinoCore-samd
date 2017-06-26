@@ -52,6 +52,8 @@
   #include "board_definitions/board_definitions_arduino_m0.h"
 #elif defined(BOARD_ID_arduino_m0_pro)
   #include "board_definitions/board_definitions_arduino_m0_pro.h"
+#elif defined(BOARD_ID_AidaDSP_Stompbox)
+  #include "board_definitions/board_definitions_aidadsp_stompbox.h"
 #else
   #error You must define a BOARD_ID and add the corresponding definitions in board_definitions.h
 #endif
