@@ -164,10 +164,12 @@
  * STRING_PRODUCT will be sent to the host. Do not enable with 4KB bootloaders.
  */
 #define USB_VENDOR_STRINGS_ENABLED
+
 //#define STRING_MANUFACTURER "MattairTech LLC"
 //#define STRING_PRODUCT "MT-D21E Rev B"
 #define STRING_MANUFACTURER "Aida DSP"
 #define STRING_PRODUCT "Stompbox HW v1.0"
+
 
 /* USB VID and PID */
 #define USB_VID_HIGH   0x16
@@ -188,6 +190,7 @@
  * quickly tapping two times on the reset button.
  */
 //#define BOOT_DOUBLE_TAP_ENABLED
+
 
 /*
  * If BOOT_LOAD_PIN is defined the bootloader is started if the selected
