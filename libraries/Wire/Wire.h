@@ -48,7 +48,7 @@ class TwoWire : public Stream
 
     size_t write(uint8_t data);
     size_t write(const uint8_t * data, size_t quantity);
-
+    size_t writeBlock(const uint8_t *, size_t, uint16_t);
     virtual int available(void);
     virtual int read(void);
     virtual int peek(void);
@@ -70,6 +70,7 @@ class TwoWire : public Stream
     uint8_t _uc_pinSCL;
 
     bool transmissionBegun;
+    bool repeatedStart;
 
     // RX Buffer
     RingBuffer rxBuffer;
@@ -77,6 +78,10 @@ class TwoWire : public Stream
     //TX buffer
     RingBuffer txBuffer;
     uint8_t txAddress;
+  
+    uint16_t txWriteRomIndex;
+    uint16_t txWriteRomQuantity;
+    const uint8_t *PtrTxRomBuffer;
 
     // Callback user functions
     void (*onRequestCallback)(void);

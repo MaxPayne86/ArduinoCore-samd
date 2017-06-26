@@ -516,11 +516,16 @@ void SERCOM::prepareCommandBitsWire(uint8_t cmd)
 
 bool SERCOM::startTransmissionWIRE(uint8_t address, SercomWireReadWriteFlag flag)
 {
+  return startTransmissionWIRE(address, flag, false);
+}
+
+bool SERCOM::startTransmissionWIRE(uint8_t address, SercomWireReadWriteFlag flag, bool repeatedStart)
+{
   // 7-bits address + 1-bits R/W
   address = (address << 0x1ul) | flag;
 
   // Wait idle or owner bus mode
-  while ( !isBusIdleWIRE() && !isBusOwnerWIRE() );
+  while ( !isBusIdleWIRE() && !isBusOwnerWIRE() && !repeatedStart);
 
   // Send start and address
   sercom->I2CM.ADDR.bit.ADDR = address;

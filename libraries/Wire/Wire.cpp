@@ -73,7 +73,7 @@ uint8_t TwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit)
 
   rxBuffer.clear();
 
-  if(sercom->startTransmissionWIRE(address, WIRE_READ_FLAG))
+  if(sercom->startTransmissionWIRE(address, WIRE_READ_FLAG, repeatedStart))
   {
     // Read first data
     rxBuffer.store_char(sercom->readDataWIRE());
@@ -87,7 +87,7 @@ uint8_t TwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit)
     }
     sercom->prepareNackBitWIRE();                           // Prepare NACK to stop slave transmission
     //sercom->readDataWIRE();                               // Clear data register to send NACK
-
+    repeatedStart = !stopBit;
     if (stopBit)
     {
       sercom->prepareCommandBitsWire(WIRE_MASTER_ACT_STOP);   // Send Stop
@@ -121,7 +121,7 @@ uint8_t TwoWire::endTransmission(bool stopBit)
   transmissionBegun = false ;
 
   // Start I2C transmission
-  if ( !sercom->startTransmissionWIRE( txAddress, WIRE_WRITE_FLAG ) )
+  if ( !sercom->startTransmissionWIRE( txAddress, WIRE_WRITE_FLAG, repeatedStart ) )
   {
     sercom->prepareCommandBitsWire(WIRE_MASTER_ACT_STOP);
     return 2 ;  // Address error
@@ -138,6 +138,23 @@ uint8_t TwoWire::endTransmission(bool stopBit)
     }
   }
   
+  if(txWriteRomQuantity!=0) //Hey we have Rom Block data to transmit!
+  {
+    while(txWriteRomIndex != txWriteRomQuantity)
+    {
+      uint8_t c = *PtrTxRomBuffer++;
+      if ( !sercom->sendDataMasterWIRE( c ) )
+      {
+        sercom->prepareCommandBitsWire(WIRE_MASTER_ACT_STOP);
+        return 3 ;  // Nack or error
+      }
+      else
+        txWriteRomIndex++;
+    }
+    txWriteRomQuantity=0; //Clear to disable further tx
+  }
+  
+  repeatedStart = !stopBit;
   if (stopBit)
   {
     sercom->prepareCommandBitsWire(WIRE_MASTER_ACT_STOP);
@@ -176,6 +193,23 @@ size_t TwoWire::write(const uint8_t *data, size_t quantity)
 
   //All data stored
   return quantity;
+}
+
+size_t TwoWire::writeBlock(const uint8_t *data, size_t quantity, uint16_t internalAddress) {
+  uint8_t MSB = 0x00, LSB = 0x00;
+  size_t i = 0;
+
+  MSB = (uint8_t)((internalAddress>>8)&0xFF);
+  LSB = (uint8_t)(internalAddress&0xFF);
+
+  write(MSB);
+  write(LSB);
+
+  txWriteRomIndex = 0;
+  txWriteRomQuantity = quantity;
+  PtrTxRomBuffer = data;
+
+  return 2;
 }
 
 int TwoWire::available(void)
