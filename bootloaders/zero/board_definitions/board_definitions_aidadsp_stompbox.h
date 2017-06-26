@@ -164,6 +164,7 @@
  * STRING_PRODUCT will be sent to the host. Do not enable with 4KB bootloaders.
  */
 #define USB_VENDOR_STRINGS_ENABLED
+
 //#define STRING_MANUFACTURER "MattairTech LLC"
 //#define STRING_PRODUCT "MT-D21E Rev B"
 #define STRING_MANUFACTURER "Aida DSP"
