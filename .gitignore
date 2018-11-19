@@ -1,4 +1,3 @@
 *.bz2
 
-bootloaders/*/build/
-bootloaders/*/binaries/
+bootloaders/*/binaries/*
